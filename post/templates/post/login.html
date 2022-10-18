@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+    <script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <script type="text/javascript">
+        window.onload = () => {
+            var width = screen.width; // 최대 넓이
+            document.getElementById("wid").width = width; // 메인 사진에 들어갈 넓이
+            document.getElementById("postsec").width = width - 600; // 게시판 섹션에 들어갈 넓이
+        
+            const searchParams=new URLSearchParams(location.search)
+        
+            const select_category = document.getElementById('select_category')
+            for (i = 0 ; i<select_category.options.length ; i++){
+                if (searchParams.get('select_category') == select_category.options[i].value){
+                   select_category.value=select_category.options[i].value
+                }
+            }
+            
+        }
+    </script>
+</head>
+<style type="text/css">
+    body {
+        margin:0px;
+        padding:0px;
+        width:100%;
+    }
+    .content {
+        max-width:800px;
+        margin: auto;
+        padding:10px;
+    }
+
+    #userid, #pw {
+        height: 32px;
+        width: 100%;
+        border: black 2px solid;
+        font-family: inherit;
+        font-size: inherit;
+    }
+
+</style>
+<body>
+    <script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <img src="/static/img/aaa.jpg" alt="My Image" height="400" id="wid">
+    <div class="content">
+        <form action="{% url 'post:login_hill' %}" method="post">
+        {% csrf_token %}
+        
+        <p style="font-size:large;">아이디</p>
+        <p><input type="text" name="userid" id="userid" value="{{userid}}"/></p>
+        {% if errorid %}
+        <p style="color: red; font-size: small;">{{errorid}}</p>
+        {% endif %}
+
+        <p style="font-size:large;">비밀번호</p>
+        <p><input type="password" name="pw" id="pw" value="{{ pw }}"/></p>
+        {% if errorpw %}
+        <p style="color: red; font-size: small;">{{errorpw}}</p>
+        {% endif %}
+        
+        <div style="text-align:left;">
+            <a href="{% url 'post:index' %}">> Home</a>
+        </div>
+        <tr>
+            <td style="text-align:left;padding: 5px;">
+                <input type="submit" value="로그인">
+            </td>
+            <td style="text-align:right;padding: 5px;">
+                <button type="button" onclick="location.href='/post/signup/'">회원가입</button>
+            </td>
+        </tr>
+        
+        </form>
+
+    </div>
+</body>
+</html>>

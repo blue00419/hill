@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style type="text/css">
+	
+		body {
+			margin:0px;
+			padding:0px;
+			width:100%;
+		}
+		.content {
+			max-width:800px;
+			margin: auto;
+			padding:10px;
+		}
+
+		.board_for_read {
+			width: 100%;
+			background-color:#f1f1f1;
+		}
+
+		#title {
+			height: 32px;
+			width: 100%;
+			border-radius: 0.5em;
+			border: none;
+			font-family: inherit;
+			font-size: inherit;
+		}
+
+		#info{
+			height: 32px;
+			width: 100%;
+			border: 1px black solid;
+			font-family: inherit;
+			font-size: inherit;
+		}
+		textarea.autosize { min-height: 500px; }
+        textarea {
+			width: 100%;
+            font-family: inherit;
+            font-size: 100%;
+			resize: none;
+			border-radius: 0.5em;
+			padding-block: 10px;
+			border: 0px;
+        }
+
+		.td_title {
+			background-color: #d8d8d8
+		}
+    </style>
+<body>
+	<script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <img src="/static/img/aaa.jpg" alt="My Image" height="400" id="wid">
+    <div class="content">
+		<form action="{% url 'post:re_write_ok' post_id %}" method="post">
+		{% csrf_token %}
+		<table>
+			<tbody>
+				<tr>
+					<select name="category" id="category" value="{{ post.category }}">
+						<option value="잡담">잡담</option>
+						<option value="공부">공부</option>
+						<option value="운동">운동</option>
+					</select>
+					{% if request.session.login_session == 'admin' %} 
+						<label><input type="checkbox" name="notice" value="yes">공지 켜기</label>
+						<label><input type="checkbox" name="notice" value="no"> 공지 끄기</label>
+					{% endif %}
+				</tr>
+			</tbody>
+		</table>
+
+		<table class="board_for_read">
+			<tbody>
+				<tr>
+					<td class="td_title" style="text-align:center; width:20%;">제목</td>
+					<td style="padding:10px;">
+						<input type="text" name="title" id="title" value="{{ post.title }}"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_title" style="text-align:center;">내용</td>
+					<td style="padding:10px;">
+						<textarea class="autosize" onkeydown="resize(this)" onkeyup="resize(this)" name="contents" id="contents">{{ post.contents }}</textarea>
+						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div style="text-align:right;padding: 5px;">
+			<input type="submit" value="글쓰기">
+		</div>
+
+		</form>
+
+		<div style="text-align:left;">
+			<a href="{% url 'post:index' %}">> Home</a>
+		</div>
+
+    </div>
+</body>
+</html>

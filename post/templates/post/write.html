@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+    <script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <script type="text/javascript">
+        window.onload = () => {
+            var width = screen.width; // 최대 넓이
+            document.getElementById("wid").width = width; // 메인 사진에 들어갈 넓이
+            document.getElementById("postsec").width = width - 600; // 게시판 섹션에 들어갈 넓이
+        
+            const searchParams=new URLSearchParams(location.search)
+        
+            const select_category = document.getElementById('select_category')
+            for (i = 0 ; i<select_category.options.length ; i++){
+                if (searchParams.get('select_category') == select_category.options[i].value){
+                   select_category.value=select_category.options[i].value
+                }
+            }
+            
+        }
+    </script>
+</head>
+<style type="text/css">
+	
+		body {
+			margin:0px;
+			padding:0px;
+			width:100%;
+		}
+		.content {
+			max-width:800px;
+			margin: auto;
+			padding:10px;
+		}
+
+		.board_for_read {
+			width: 100%;
+			background-color:#f1f1f1;
+		}
+
+		#title {
+			height: 32px;
+			width: 100%;
+			border-radius: 0.5em;
+			border: none;
+			font-family: inherit;
+			font-size: inherit;
+		}
+
+		#info{
+			height: 32px;
+			width: 100%;
+			border: 1px black solid;
+			font-family: inherit;
+			font-size: inherit;
+		}
+		textarea.autosize { min-height: 500px; }
+        textarea {
+			width: 100%;
+            font-family: inherit;
+            font-size: 100%;
+			resize: none;
+			border-radius: 0.5em;
+			padding-block: 10px;
+			border: 0px;
+        }
+
+		.td_title {
+			background-color: #d8d8d8
+		}
+    </style>
+<body>
+
+    <img src="/static/img/aaa.jpg" alt="My Image" height="400" id="wid">
+    <div class="content">
+		<form action="{% url 'post:write_post' %}" method="post">
+		{% csrf_token %}
+		<table>
+			<tbody>
+				<tr>
+					<select name="category" id="category" value="{{ post.category }}">
+						<option value="잡담">잡담</option>
+						<option value="공부">공부</option>
+						<option value="운동">운동</option>
+					</select>
+					{% if request.session.login_session == 'admin' %} 
+						<label><input type="checkbox" name="notice" value="yes">공지 켜기</label>
+						<label><input type="checkbox" name="notice" value="no"> 공지 끄기</label>
+					{% endif %}
+					{% if not request.session.login_session %}
+						<td>
+							<input type="text" name="nickname" id="nickname" value="{{ post.nickname }}" placeholder="아이디"/>
+						</td>
+						<td>
+							<input type="password" name="pw" id="pw" value="{{ post.pw }}" placeholder="비밀번호"/>
+						</td>
+                    {% endif %}
+				</tr>
+			</tbody>
+		</table>
+
+		<table class="board_for_read">
+			<tbody>
+				<tr>
+					<td class="td_title" style="text-align:center; width:20%;">제목</td>
+					<td style="padding:10px;">
+						<input type="text" name="title" id="title" value="{{ post.title }}"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_title" style="text-align:center;">내용</td>
+					<td style="padding:10px;">
+						<textarea class="autosize" onkeydown="resize(this)" onkeyup="resize(this)" name="contents" id="contents">{{ post.contents }}</textarea>
+						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div style="text-align:right;padding: 5px;">
+			<input type="submit" value="글쓰기">
+		</div>
+
+		</form>
+
+		<div style="text-align:left;">
+			<a href="{% url 'post:index' %}">> Home</a>
+		</div>
+
+    </div>
+</body>
+</html>

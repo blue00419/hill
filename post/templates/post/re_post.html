@@ -1,0 +1,61 @@
+<
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style type="text/css">
+    body {
+        margin:0px;
+        padding:0px;
+        width:100%;
+    }
+    .content {
+        max-width:500px;
+        margin: auto;
+        padding:10px;
+    }
+
+    #userid, #pw {
+        height: 32px;
+        width: 100%;
+        border: black 2px solid;
+        font-family: inherit;
+        font-size: inherit;
+    }
+
+</style>
+<body>
+    <script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <img src="/static/img/aaa.jpg" alt="My Image" height="400" id="wid">
+    <div class="content">
+        <form action="{% url 'post:re_write' post_id %}" method="post">
+        {% csrf_token %}
+        
+        <p style="font-size:large;">비밀번호</p>
+        <p><input type="password" name="pw" id="pw" value="{{ pw }}"/></p>
+        {% if errorpw %}
+        <p style="color: red; font-size: small;">{{errorpw}}</p>
+        {% endif %}
+        
+        <div style="text-align:left;">
+            <a href="{% url 'post:index' %}">> Home</a>
+        </div>
+        <table style="width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100%;"><div></div></td>
+                    <td style="text-align:left;padding: 5px;">
+                        <input type="submit" value="확인">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        </form>
+
+    </div>
+</body>
+</html>>

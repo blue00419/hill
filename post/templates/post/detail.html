@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+      
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+    <script type="text/javascript" src="/static/js/windowwidth.js"></script>
+
+    <script type="text/javascript">
+        window.onload = () => {
+            var width = screen.width; // 최대 넓이
+            document.getElementById("wid").width = width; // 메인 사진에 들어갈 넓이
+            document.getElementById("postsec").width = width - 600; // 게시판 섹션에 들어갈 넓이
+        
+            const searchParams=new URLSearchParams(location.search)
+        
+            const select_category = document.getElementById('select_category')
+            for (i = 0 ; i<select_category.options.length ; i++){
+                if (searchParams.get('select_category') == select_category.options[i].value){
+                   select_category.value=select_category.options[i].value
+                }
+            }
+            
+        }
+    </script>
+</head>
+<style type="text/css">
+	.board_for_read {
+		width: 100%;
+	}
+
+	textarea {
+		font-family: inherit;
+		font-size: 100%;
+		resize: none;
+		padding-block: 10px;
+		background: none;
+		width: 100%;
+        border-radius: 10px;
+        min-height: 50px;
+        height:auto;
+	}
+
+	.td_title {
+		background-color: #d8d8d8
+	}
+
+    thead {
+        background-color: rgb(175, 219, 175);
+    }
+
+
+    .header {
+        text-align: center;
+    }
+
+
+    .even_bgcolor {
+        background-color:#e8efff;
+    }
+
+    body {
+        margin:0;
+        padding:0;
+        width: 100%;
+    }
+
+    section {
+        width:200px;
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+
+    article {
+        height: 200px;
+        min-height: 200px;
+        max-height: 200px;
+    }
+
+    .box {
+        width: 100px;
+        height: 100px; 
+        border-radius: 70%;
+        overflow: hidden;
+        transform: translate(+20%, +10%);
+    }
+    .profile {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .log {
+        padding-top: 30px;
+        padding-left: 10px;
+    }
+
+    .pagination {
+        display: flex;           
+    }
+
+    .current {
+        font-weight: bold;
+    }
+
+    a {
+        text-decoration: none;
+        text-align: center;
+    }
+    
+    .abutton {
+        background-color: #e6e6ff;
+        color: #7b7b7b;
+        font-size: small;
+    }
+
+    .post_btn { border:0px; font-size:20px; background-color:white; }
+    .post_btn:hover{ background-color:#DBDBDB; font-size:25px; }
+
+    .post_title:link{ color:black; font-size:20px; }
+    .post_title:visited{ color:#BDBDBD; font-size:20px; }
+    .post_title:hover{ color:#A9BCF5; font-size:20px; }
+    .post_title:active{ }
+
+    .notice_post_title:link{ color:red; font-size:20px; font-weight:bold; }
+    .notice_post_title:visited{ color:#F7819F; font-size:20px; font-weight:bold; }
+    .notice_post_title:hover{ color:#A9BCF5; font-size:20px; font-weight:bold; }
+    .notice_post_title:active{ }
+
+</style>
+<body>
+    <script>
+        // HTML의 <script> 요소를 생성한다
+        const se = document.createElement('script');
+        // <script> 요소의 src 속성을 설정한다
+        se.src = 'https://ipinfo.io?callback=callback';
+        // <body> 요소의 하위 끝에 붙인다
+        // 그리고 콜백 함수를 호출한다
+        document.body.appendChild(se);
+        // 앞서 생성한 <script> 요소를 제거한다
+        document.body.removeChild(se);
+    
+        // 콜백 함수가 호출된다
+        function callback(data) {
+        document.getElementById('userip').textContent = data.ip;
+        }
+    </script>
+
+    <img src="/static/img/aaa.jpg" alt="My Image" height="400" id="wid">
+    <main style="display:flex;">
+        <section style="margin-left:100px;">
+            <article> 
+                <div>
+                    <tr>
+                        <div class="box" style="background: #BDBDBD;">
+                            <img class="profile" src="/static/img/aaa.jpg">
+                        </div>
+                    </tr>
+                </div>
+                <div class="log">
+                    <tr>
+                        <table>
+                            <tbody>
+                                {% if request.session.login_session %}
+                                <td>
+                                    <p>{{ nickname }}</p>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <input type="button" onclick="location.href='/post/logout/'" value="로그아웃"></input>
+                                </td>
+                                {% else %}
+                                <td>
+                                    <input type="button" onclick="location.href='/post/login/'" value="로그인"></input>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <input type="button" onclick="location.href='/post/signup/'" value="회원가입"></input>
+                                </td>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        
+                        
+                    </tr>
+                </div>
+            </article>
+            
+
+            <article>
+                <table style="width:100%; text-align:center; height:100%;">
+                    <tbody>
+                        <tr>
+                            <form action="{% url 'post:index' %}" method="post">
+                                {% csrf_token %}
+                                <td style="text-align:center;">
+                                    <input type="submit" name="post0" id="post0" 
+                                    class="post_btn" value="전체 게시판"></input></td>
+                            </form>
+                        </tr>
+                        <tr>
+                            <form action="{% url 'post:index' %}" method="post">
+                                {% csrf_token %}
+                                <td style="text-align:center;">
+                                    <input type="submit" name="post1" id="post1" 
+                                    class="post_btn" value="잡담 게시판"></input></td>
+                            </form>
+                        </tr>
+                        <tr>
+                            <form action="{% url 'post:index' %}" method="post">
+                                {% csrf_token %}
+                                <td style="text-align:center;">
+                                    <input type="submit" name="post2" id="post2" 
+                                    class="post_btn" value="공부 게시판"></input></td>
+                            </form>
+                        </tr>
+                        <tr>
+                            <form action="{% url 'post:index' %}" method="post">
+                                {% csrf_token %}
+                                <td style="text-align:center;">
+                                    <input type="submit" name="post3" id="post3" 
+                                    class="post_btn" value="운동 게시판"></input></td>
+                            </form>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </section>
+
+
+        <aside>
+            <div class="content">
+				<table class="board_for_read">
+					<tbody>
+						<tr>
+							<td style="text-align:center; width:20%; height=34px;">
+                                <h3>{{post.nickname}}</h3>
+                            </td>
+							<td style="text-align:center; width:60%; height=34px;">
+                                <h3>{{post.time|date:'Y-m-d H:i'}}</h3>
+                            </td>
+							<td style="text-align:center; width:10%; height=34px;">
+                                <h3>조회 : {{post.views}}</h3>
+                            </td>
+							<td style="text-align:center; width:10%; height=34px;">
+                                <h3>추천 : {{post.recommendation}}</h3>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table class="board_for_read">
+					<tbody>
+						<tr>
+							<td style="padding:10px; ">
+								<h1 style="margin-left:20px; color:#DF0101;">{{ post.title }}</h1>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table class="board_for_read">
+					<tbody>
+						<tr>
+							<td style="padding:10px;">
+								<textarea name="detail" id="detail" style="height:{{line}}px; border: 0px; 
+                                min-height: 200px; width:100%; margin-top:150px;" 
+                                readonly>{{ post.contents }}</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align:center; width:100%;">
+							    <a href="{% url 'post:post_recommend' post.num %}">
+                                    <img src="/static/img/like.jpg" style="width:100px; height:100px;">
+                                </a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+                <table  class="board_for_read">
+					<tbody>
+                        <td style="width:100%;">
+                            <div>
+                                
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <form action="{% url 'post:re_post' post.num %}" method="get">
+                                    {% csrf_token %}
+                                    <input type="submit" value="수정"></td>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <form action="{% url 'post:remove_post' post.num %}" method="get">
+                                    {% csrf_token %}
+                                    <input type="submit" value="삭제"></td>
+                                </form>
+                            </div>
+                        </td>
+
+                        <tr style="height:100px;"></tr>
+					</tbody>
+				</table>
+				<div style="text-align:left;">
+					<a href="{% url 'post:index' %}">> Home</a>
+				</div>
+		
+				
+				<table class="board_for_read">
+                    <tbody>
+						<tr>
+                            <td>댓글 ( {{count}} )</td>
+                        </tr>
+                    </tbody>
+				</table>
+				<table class="board_for_read">
+                    <tbody>
+                        {% if count == 0 %}
+                        <tr>
+                            <td colspan="2" class="td_title" style="text-align:left; padding-left:10px; height:30px;">leave a comment</td>
+                        </tr>
+                        {% endif %}
+                        {% for data in comment_list %}
+                        <tr>
+                            <td style="width:94%;">
+                                <div>
+                                    <span style="font-size:25px;">
+                                        {{ data.nickname}}
+                                    </span>
+                                    <span style="font-size:15px;">
+                                        ({{ data.time|date:'Y-m-d H:i' }})
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <form action="{% url 'post:comment_recommend' data.num post.num %}" method="get">
+                                        {% csrf_token %}
+                                        <input type="submit" value="추천"></input>
+                                    </form>
+                                </div>
+                            </td>
+                            
+                            <td style="text-align:center;">
+                                <div>
+                                    <span style="font-size:15px;">
+                                        : {{ data.recommendation }}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ data.contents}}</td>
+                            <td>
+                                <div>
+                                    <form action="{% url 'post:re_comment' data.num post.num %}" method="get">
+                                        {% csrf_token %}
+                                        <input type="submit" value="수정"></td>
+                                    </form>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <form action="{% url 'post:remove_comment' data.num post.num %}" method="get">
+                                        {% csrf_token %}
+                                        <input type="submit" value="삭제"></td>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr style="height:25px;">
+                            <td>
+                            <div style="height:25px; border-bottom: 1px solid #dcdcdc;"></div>
+                            </td>
+                            <td>
+                                <div style="height:25px; border-bottom: 1px solid #dcdcdc;"></div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>  
+				</table>
+                <form action="{% url 'post:create_reply' post.num %}" method="post">
+                {% csrf_token %}
+				<table class="board_for_read">
+                    <tbody>
+                        <tr style="text-align : center;">
+                            {% if request.session.login_session %}
+                            <td style="text-align:center;">
+                                {{ nickname }}:
+                            </td>
+                            {% else %}
+                            <div>
+                                <td style="text-align:center;">
+                                    <tr>
+                                        <input type="text" name="comment_id" id="comment_id" value="{{post.comment_id}}" placeholder="아이디">
+                                    </tr>
+                                    
+                                    <tr>
+                                        <input type="password" name="comment_pw" id="comment_pw" value="{{post.comment_pw}}" placeholder="비밀번호">
+                                    </tr>
+                            </div>
+                            {% endif %}
+                            <td style=" width:100%">
+                                <textarea name="contents" id="contents" style="height:{{line}}px; 
+                                min-height: 100px; width:100%;"></textarea>
+                            </td>
+                            <td><input type="submit" value="save"></td>
+                        </tr>
+                        <tr style="height:100px;"></tr>
+					</tbody>
+				</table>
+				</form>
+
+                <div>
+                    <table style="width:100%;">
+                        <tbody>
+                            <th style="width:5%">
+                                <form method="get" action="" class="form">
+                                    {% csrf_token %}
+                                    <select id="select_category" name="select_category">
+                                        <option value="recently">최근순</option>
+                                        <option value="views">조회순</option>
+                                        <option value="likes">추천순</option>
+                                    </select>
+                                </form>
+                                <script>
+                                    $(document).ready(function() {
+                                        $( "select[name=select_category]" ).val( "{{ my_category }}" );
+                                        $('select[name=select_category]').change(function () {
+                                        console.log($('select[name=select_category]').val());
+                                        select_category = $('select[name=select_category]').val();
+                                        $('.form').submit();
+                                    });
+                                });
+                                </script>
+                            </th>
+                            <th style="width:90%"></th>
+                            <th style="width:5%">
+                                <input type="button" onclick="location.href='/post/write/'" value="글쓰기"></input>
+                            </th>
+                        </tbody>
+                    </table>
+                    
+                    <table id="postsec">
+                        <thead>
+                            <re class="header">
+                                <th style="width:6%">번호</th>
+                                <th style="width:60%">제목</th>
+                                <th style="width:10%">글쓴이</th>
+                                <th style="width:10%">등록일</th>
+                                <th style="width:7%">조회</th>
+                                <th style="width:7%">추천</th>
+                            </re>
+                        </thead>
+                        <tbody>
+                            {% if postcount %}
+                                {% if notice_post_list %}
+                                    {% for data in notice_post_list %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ data.num }}</td>
+                                        <td>
+                                            <a href="{% url 'post:detail' data.num %}" class="notice_post_title">
+                                                {{ data.title}}
+                                            </a>
+                                        </td>
+                                        <td style="text-align:center;">{{ data.nickname}}</td>
+                                        <td style="text-align:center;">{{ data.time|date:'Y-m-d' }}</td>
+                                        <td style="text-align:center;">{{ data.views }}</td>
+                                        <td style="text-align:center;">{{ data.recommendation }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if post_list %}
+                                    {% for data in post_list %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ data.num }}</td>
+                                        <td>
+                                            <a href="{% url 'post:detail' data.num %}" class="post_title" >
+                                                {{ data.title}}
+                                            </a>
+                                        </td>
+                                        <td style="text-align:center;">{{ data.nickname}}</td>
+                                        <td style="text-align:center;">{{ data.time|date:'Y-m-d' }}</td>
+                                        <td style="text-align:center;">{{ data.views }}</td>
+                                        <td style="text-align:center;">{{ data.recommendation }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            {% else %}
+                            <re class="header">
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align:center;">작성된 게시글이 없습니다.</td>
+                                </tr>
+                            </re>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    
+                    <table style="width:100%;">
+                        <tbody>
+                            <th style="width:95%">
+                            </th>
+                            <th style="width:5%">
+                                <input type="button" onclick="location.href='/post/write/'" value="글쓰기"></input>
+                            </th>
+                        </tbody>
+                    </table>
+                    <table style="width:100%;">
+                        <tbody>
+                            <th>
+                                
+                                <form action="{% url 'post:index' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="text" name="search" id="search"value="{{search}}"></input>
+                                    <input type="submit" value="검색">
+                                </form>
+                            </th>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+            <!-- Pagination -->
+            <div style="text-align:center">
+                <div class="pagination">
+                    <div style="width:33%; margin: 5px;"></div>
+                
+                    <div style="width:10%; margin: 5px;">
+                    {% if post_list.has_previous %}
+                        <a class="abutton" href="?page=1">맨 앞으로</a>
+                        <a class="abutton" href="?page={{ post_list.previous_page_number }}">이전</a>
+                    {% endif %}
+                    </div>
+
+                    <div style="width:14%; margin: 5px;">
+                    {% for page in post_list.paginator.page_range %}
+                        {% if page >= post_list.number|add:-4 and page <= post_list.number|add:4 %}
+                        <span class="{% if page == post_list.number %}current{% endif %}">
+                            <a href="?page={{ page }}">{{ page}}</a>
+                        </span>
+                        {% elif page >= post_list.number|add:-5 and page <= post_list.number|add:5 %}
+                            ..
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+
+                    <div style="width:10%; margin: 5px;">
+                    {% if post_list.has_next %}
+                        <a class="abutton" href="?page={{ post_list.next_page_number }}">다음</a>
+                        <a class="abutton" href="?page={{ post_list.paginator.num_pages }}">맨 뒤로</a>
+                    {% endif %}
+                    </div>
+
+                    <div style="width:33%; margin: 5px;"></div>
+
+                </div>  
+            </div> 
+        </aside>
+
+        <section>
+
+        </section>
+    </main>
+</body>
+</html>
